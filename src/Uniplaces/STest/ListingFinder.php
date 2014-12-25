@@ -3,9 +3,7 @@
 namespace Uniplaces\STest;
 
 use Uniplaces\STest\Listing\Listing;
-use Uniplaces\STest\Requirement\StayTime;
-use Uniplaces\STest\Requirement\TenantTypes;
-use DateTime;
+use Uniplaces\STest\Search\Search;
 
 class ListingFinder implements ListingFinderInterface
 {
@@ -14,12 +12,21 @@ class ListingFinder implements ListingFinderInterface
      */
     protected $searchType;
 
+    /***
+     * @var Search
+     *
+     * 'simple'   => Obj
+     * 'advanced' => Obj
+     */
+    protected $searchMethods;
+
     /**
      * @param string $searchType simple|advanced
      */
     public function __construct($searchType = 'simple')
     {
         $this->searchType = $searchType;
+        $this->searchMethods = new Search();
     }
 
     /**
@@ -33,50 +40,16 @@ class ListingFinder implements ListingFinderInterface
         $matchListings = array();
 
         foreach ($listings as $listing) {
-            if ($listing->getLocalization()->getCity() != $search['city']) {
+
+            if(!ListingFilter::isCriteriaMatched($listing, $search)){
                 continue;
             }
 
-            $stayTime = $listing->getRequirements()->getStayTime();
-            if (isset($search['start_date']) && $stayTime instanceof StayTime) {
-                /** @var DateTime $startDate */
-                $startDate = $search['start_date'];
-                /** @var DateTime $endDate */
-                $endDate = $search['end_date'];
+            $searchMethod = $this->searchMethods->type($this->searchType);
 
-                $interval = $endDate->diff($startDate);
-                $days = (int)$interval->format('%a');
-
-                if ($days < $stayTime->getMin() || $days > $stayTime->getMax()) {
-                    continue;
-                }
-            }
-
-
-            $tenantTypes = $listing->getRequirements()->getTenantTypes();
-            if ($tenantTypes instanceof TenantTypes && !in_array($search['occupation'], $tenantTypes->toArray())) {
-                continue;
-            }
-
-
-            if ($this->searchType == 'advanced') {
-                if (isset($search['address'])) {
-                    $listingAddress = strtolower(trim($listing->getLocalization()->getAddress()));
-                    $address = strtolower(trim($search['address']));
-
-                    if (levenshtein($listingAddress, $address) > 5) {
-                        continue;
-                    }
-                }
-
-                if (isset($search['price'])) {
-                    $listingPrice = $listing->getPrice();
-                    $min = isset($search['price']['min']) ? $search['price']['min'] : null;
-                    $max = isset($search['price']['max']) ? $search['price']['max'] : null;
-
-                    if (($min !== null && $min > $listingPrice) || ($max !== null && $max < $listingPrice)) {
-                        continue;
-                    }
+            foreach ($searchMethod->filterType($search) as $k => $v) {
+                if (!$v->execute($listing, $search)) {
+                    continue 2;
                 }
             }
 
@@ -85,4 +58,5 @@ class ListingFinder implements ListingFinderInterface
 
         return $matchListings;
     }
+
 }
