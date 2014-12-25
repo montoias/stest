@@ -8,16 +8,16 @@
 
 namespace Uniplaces\STest\Search\AdvancedSearch;
 
-use Uniplaces\STest\Search\SearchInterface;
 use Uniplaces\STest\Search\SearchOperations;
+use Uniplaces\STest\Search\SearchProperties;
 
 class AdvancedSearch extends SearchOperations {
 
 
     public function __construct()
     {
-        $this->search['address'] = AdvancedSearchFactory::createAddress();
-        $this->search['price']   = AdvancedSearchFactory::createPrice();
+        $this->search[SearchProperties::ADDRESS] = AdvancedSearchFactory::createAddress();
+        $this->search[SearchProperties::PRICE]   = AdvancedSearchFactory::createPrice();
     }
 
 }

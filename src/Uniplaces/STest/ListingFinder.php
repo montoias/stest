@@ -4,6 +4,7 @@ namespace Uniplaces\STest;
 
 use Uniplaces\STest\Listing\Listing;
 use Uniplaces\STest\Search\Search;
+use Uniplaces\STest\Search\SearchProperties;
 
 class ListingFinder implements ListingFinderInterface
 {
@@ -23,7 +24,7 @@ class ListingFinder implements ListingFinderInterface
     /**
      * @param string $searchType simple|advanced
      */
-    public function __construct($searchType = 'simple')
+    public function __construct($searchType = SearchProperties::SIMPLE)
     {
         $this->searchType = $searchType;
         $this->searchMethods = new Search();

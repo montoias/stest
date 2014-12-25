@@ -8,7 +8,6 @@
 
 namespace Uniplaces\STest\Search;
 
-
 class Search {
 
     /***
@@ -20,8 +19,8 @@ class Search {
 
     function __construct(){
         $this->searchTypes = array();
-        $this->searchTypes['simple']   = SearchFactory::simpleSearch();
-        $this->searchTypes['advanced'] = SearchFactory::advancedSearch();
+        $this->searchTypes[SearchProperties::SIMPLE]   = SearchFactory::simpleSearch();
+        $this->searchTypes[SearchProperties::ADVANCED] = SearchFactory::advancedSearch();
        //$this->searchTypes['extra-ad'] = new AdvancedSearch();
     }
 

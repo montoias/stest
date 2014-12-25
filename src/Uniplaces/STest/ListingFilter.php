@@ -10,6 +10,7 @@ namespace Uniplaces\STest;
 
 use Uniplaces\STest\Requirement\StayTime;
 use Uniplaces\STest\Requirement\TenantTypes;
+use Uniplaces\STest\Search\SearchProperties;
 
 
 class ListingFilter {
@@ -33,11 +34,11 @@ class ListingFilter {
 
     public static function validStayTime($listing, $search){
         $stayTime = $listing->getRequirements()->getStayTime();
-        if (isset($search['start_date']) && $stayTime instanceof StayTime) {
+        if (isset($search[SearchProperties::START_DATE]) && $stayTime instanceof StayTime) {
             /** @var DateTime $startDate */
-            $startDate = $search['start_date'];
+            $startDate = $search[SearchProperties::START_DATE];
             /** @var DateTime $endDate */
-            $endDate = $search['end_date'];
+            $endDate = $search[SearchProperties::END_DATE];
 
             $interval = $endDate->diff($startDate);
             $days = (int)$interval->format('%a');
@@ -49,7 +50,7 @@ class ListingFilter {
 
     public static function validTenant($listing, $search){
         $tenantTypes = $listing->getRequirements()->getTenantTypes();
-        return $tenantTypes instanceof TenantTypes && !in_array($search['occupation'], $tenantTypes->toArray());
+        return $tenantTypes instanceof TenantTypes && !in_array($search[SearchProperties::OCCUPATION], $tenantTypes->toArray());
     }
 
 }
